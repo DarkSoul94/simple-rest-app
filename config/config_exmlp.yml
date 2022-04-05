@@ -1,0 +1,20 @@
+app:
+  name: ""
+  socket_mode: false
+  socket_file: "app.sock"
+  http_port: 8888
+  log:
+    dir: "logs"
+    file: "app.log"
+    logstash:
+      url: ""
+  client: 
+    use: true
+    dir: "dist"
+  db:
+    login: ""
+    pass: ""
+    host: ""
+    port: 3306
+    name: ""
+    args: "parseTime=true&multiStatements=true"  
