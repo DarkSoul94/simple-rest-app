@@ -22,8 +22,6 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file" // required
 	"github.com/spf13/viper"
-	gomrmysql "gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 // App ...
@@ -67,21 +65,11 @@ func (a *App) Run(port string) error {
 
 	var l net.Listener
 	var err error
-	if viper.GetBool("app.sock_mode") {
-		sockName := viper.GetString("app.sock_name")
-		os.Remove(sockName)
-		l, err = net.Listen("unix", sockName)
-		if err != nil {
-			panic(err)
-		}
-		defer l.Close()
-		os.Chmod(sockName, 0664)
-	} else {
-		l, err = net.Listen("tcp", a.httpServer.Addr)
-		if err != nil {
-			panic(err)
-		}
+	l, err = net.Listen("tcp", a.httpServer.Addr)
+	if err != nil {
+		panic(err)
 	}
+
 	go func(l net.Listener) {
 		if err := a.httpServer.Serve(l); err != nil {
 			log.Fatalf("Failed to listen and serve: %+v", err)
@@ -135,26 +123,4 @@ func runMigrations(db *sql.DB) {
 	if err != nil && err != migrate.ErrNoChange && err != migrate.ErrNilVersion {
 		fmt.Println(err)
 	}
-}
-
-func initGormDB() *gorm.DB {
-	dbString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s",
-		viper.GetString("app.db.login"),
-		viper.GetString("app.db.pass"),
-		viper.GetString("app.db.host"),
-		viper.GetString("app.db.port"),
-		viper.GetString("app.db.name"),
-		viper.GetString("app.db.args"),
-	)
-	db, err := gorm.Open(gomrmysql.Open(dbString), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-	return db
-}
-
-func runGormMigrations(db *gorm.DB) {
-	// Migrate the schema
-	// Add links to needed models
-	db.AutoMigrate()
 }
