@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/alexvelfr/go-template/pkg/config"
-	"github.com/alexvelfr/go-template/server"
+	"github.com/DarkSoul94/simple-rest-app/pkg/config"
+	"github.com/DarkSoul94/simple-rest-app/server"
 	micrologger "github.com/alexvelfr/micro-logger"
 	"github.com/spf13/viper"
 )

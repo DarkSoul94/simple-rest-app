@@ -1,4 +1,4 @@
-module github.com/alexvelfr/go-template
+module github.com/DarkSoul94/simple-rest-app
 
 go 1.17
 

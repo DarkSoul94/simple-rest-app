@@ -1,9 +1,7 @@
 package http
 
 import (
-	"net/http"
-
-	"github.com/alexvelfr/go-template/app"
+	"github.com/DarkSoul94/simple-rest-app/app"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,8 +17,18 @@ func NewHandler(uc app.Usecase) *Handler {
 	}
 }
 
-// HelloWorld ...
-func (h *Handler) HelloWorld(c *gin.Context) {
-	h.uc.HelloWorld(c.Request.Context())
-	c.JSON(http.StatusOK, map[string]string{"status": "ok"})
+func (h *Handler) CreateBook(c *gin.Context) {
+
+}
+func (h *Handler) GetBook(c *gin.Context) {
+
+}
+func (h *Handler) GetAllBooks(c *gin.Context) {
+
+}
+func (h *Handler) UpdateBook(c *gin.Context) {
+
+}
+func (h *Handler) DeleteBook(c *gin.Context) {
+
 }

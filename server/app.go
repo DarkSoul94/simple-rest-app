@@ -11,10 +11,10 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/alexvelfr/go-template/app"
-	apphttp "github.com/alexvelfr/go-template/app/delivery/http"
-	apprepo "github.com/alexvelfr/go-template/app/repo/mock"
-	appusecase "github.com/alexvelfr/go-template/app/usecase"
+	"github.com/DarkSoul94/simple-rest-app/app"
+	apphttp "github.com/DarkSoul94/simple-rest-app/app/delivery/http"
+	apprepo "github.com/DarkSoul94/simple-rest-app/app/repo/mock"
+	appusecase "github.com/DarkSoul94/simple-rest-app/app/usecase"
 	micrologger "github.com/alexvelfr/micro-logger"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
@@ -53,7 +53,8 @@ func (a *App) Run(port string) error {
 		router.Use(static.Serve("/", static.LocalFile(viper.GetString("app.client.dir"), true)))
 	}
 
-	apphttp.RegisterHTTPEndpoints(router, a.appUC)
+	apiRouter := router.Group("/api")
+	apphttp.RegisterHTTPEndpoints(apiRouter, a.appUC)
 
 	a.httpServer = &http.Server{
 		Addr:           ":" + port,

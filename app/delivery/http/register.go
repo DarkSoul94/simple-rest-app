@@ -1,16 +1,20 @@
 package http
 
 import (
-	"github.com/alexvelfr/go-template/app"
+	"github.com/DarkSoul94/simple-rest-app/app"
 	"github.com/gin-gonic/gin"
 )
 
 // RegisterHTTPEndpoints ...
-func RegisterHTTPEndpoints(router *gin.Engine, uc app.Usecase) {
+func RegisterHTTPEndpoints(router *gin.RouterGroup, uc app.Usecase) {
 	h := NewHandler(uc)
 
-	apiEndpoints := router.Group("/api")
+	bookEndpoints := router.Group("/book")
 	{
-		apiEndpoints.POST("/", h.HelloWorld)
+		bookEndpoints.POST("/", h.CreateBook)
+		bookEndpoints.GET("/", h.GetBook)
+		bookEndpoints.GET("/:id", h.GetAllBooks)
+		bookEndpoints.PUT("/:id", h.UpdateBook)
+		bookEndpoints.DELETE("/:id", h.DeleteBook)
 	}
 }
