@@ -19,7 +19,7 @@ import (
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file" // required
 	"github.com/spf13/viper"
 )
@@ -33,6 +33,8 @@ type App struct {
 
 // NewApp ...
 func NewApp() *App {
+	db := initDB()
+	fmt.Println(db)
 	repo := apprepo.NewRepo()
 	uc := appusecase.NewUsecase(repo)
 	return &App{
@@ -44,6 +46,7 @@ func NewApp() *App {
 // Run run application
 func (a *App) Run(port string) error {
 	defer a.appRepo.Close()
+
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(
@@ -89,16 +92,15 @@ func (a *App) Run(port string) error {
 }
 
 func initDB() *sql.DB {
-	dbString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s",
-		viper.GetString("app.db.login"),
-		viper.GetString("app.db.pass"),
+	dbString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		viper.GetString("app.db.host"),
 		viper.GetString("app.db.port"),
+		viper.GetString("app.db.login"),
+		viper.GetString("app.db.pass"),
 		viper.GetString("app.db.name"),
-		viper.GetString("app.db.args"),
 	)
 	db, err := sql.Open(
-		"mysql",
+		"postgres",
 		dbString,
 	)
 	if err != nil {
@@ -109,7 +111,7 @@ func initDB() *sql.DB {
 }
 
 func runMigrations(db *sql.DB) {
-	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		panic(err)
 	}
