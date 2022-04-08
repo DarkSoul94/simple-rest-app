@@ -2,10 +2,12 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/DarkSoul94/simple-rest-app/app"
 	"github.com/DarkSoul94/simple-rest-app/models"
+	"github.com/DarkSoul94/simple-rest-app/pkg/logger"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -28,17 +30,22 @@ type dbBook struct {
 
 func (r *repo) CreateBook(book models.Book) error {
 	var (
-		query string
-		err   error
+		dbBook dbBook
+		query  string
+		err    error
 	)
 
-	query = `INSERT INTO books SET 
-						name = :name,
-						author = :author,
-						creation_date = :creation_date`
+	query = `INSERT INTO books (name, author, creation_date) VALUES ($1, $2, $3)`
 
-	_, err = r.db.Exec(query, r.toDbBook(book))
+	dbBook = r.toDbBook(book)
+	_, err = r.db.Exec(query, dbBook.Name, dbBook.Author, dbBook.CreationDate)
 	if err != nil {
+		logger.LogError(
+			"Create book",
+			"app/repo/postgres/repo",
+			fmt.Sprintf("name: %s, author: %s, date: %s", book.Name, book.Author, book.CreationDate),
+			err,
+		)
 		return err
 	}
 
@@ -52,7 +59,7 @@ func (r *repo) GetBookByID(id uint64) (models.Book, error) {
 		err   error
 	)
 
-	query = `SELECT * FROM books id = ?`
+	query = `SELECT * FROM books WHERE id = $1`
 	err = r.db.Get(&book, query, id)
 	if err != nil {
 		return models.Book{}, err
@@ -84,16 +91,20 @@ func (r *repo) GetBooks() ([]models.Book, error) {
 
 func (r *repo) UpdateBook(book models.Book) error {
 	var (
-		query string
-		err   error
+		dbBook dbBook
+		query  string
+		err    error
 	)
 
 	query = `UPDATE books SET
-						name = :name,
-						author = :author,
-						creation_date = :creation_date
-						WHERE id = :id`
-	_, err = r.db.Exec(query, r.toDbBook(book))
+						name = $1,
+						author = $2,
+						creation_date = $3
+						WHERE id = $4`
+
+	dbBook = r.toDbBook(book)
+
+	_, err = r.db.Exec(query, dbBook.Name, dbBook.Author, dbBook.CreationDate, dbBook.ID)
 	if err != nil {
 		return err
 	}
@@ -107,7 +118,7 @@ func (r *repo) DeleteBook(id uint64) error {
 		err   error
 	)
 
-	query = `DELETE FROM books WHERE id = ?`
+	query = `DELETE FROM books WHERE id = $1`
 	_, err = r.db.Exec(query, id)
 	if err != nil {
 		return err

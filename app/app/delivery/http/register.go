@@ -12,9 +12,9 @@ func RegisterHTTPEndpoints(router *gin.RouterGroup, uc app.Usecase) {
 	bookEndpoints := router.Group("/book")
 	{
 		bookEndpoints.POST("/", h.CreateBook)
-		bookEndpoints.GET("/", h.GetBook)
-		bookEndpoints.GET("/:id", h.GetAllBooks)
-		bookEndpoints.PUT("/:id", h.UpdateBook)
+		bookEndpoints.GET("/", h.GetAllBooks)
+		bookEndpoints.GET("/:id", h.GetBook)
+		bookEndpoints.PUT("/", h.UpdateBook)
 		bookEndpoints.DELETE("/:id", h.DeleteBook)
 	}
 }

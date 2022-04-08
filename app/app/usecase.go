@@ -1,8 +1,11 @@
 package app
 
-import "context"
+import "github.com/DarkSoul94/simple-rest-app/models"
 
-// Usecase ...
 type Usecase interface {
-	HelloWorld(ctx context.Context)
+	CreateBook(book models.Book) error
+	GetBookByID(id uint64) (models.Book, error)
+	GetBooks() ([]models.Book, error)
+	UpdateBook(book models.Book) error
+	DeleteBook(id uint64) error
 }

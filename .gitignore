@@ -1,3 +1,4 @@
 app/.bin/
 app/config/config.yml
+app/logs
 data
