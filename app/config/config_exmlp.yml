@@ -1,0 +1,12 @@
+app:
+  name: "simple rest app"
+  http_port: 8888
+  log:
+    dir: "logs"
+    file: "app.log"
+  db:
+    login: "login"
+    pass: "pass"
+    host: "localhost"
+    port: 5432
+    name: "postgres"

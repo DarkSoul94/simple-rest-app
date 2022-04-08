@@ -1,2 +1,3 @@
-.bin/
-config/config.yml
+app/.bin/
+app/config/config.yml
+data
