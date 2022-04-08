@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -46,7 +47,7 @@ func (r *repo) CreateBook(book models.Book) error {
 			fmt.Sprintf("name: %s, author: %s, date: %s", book.Name, book.Author, book.CreationDate),
 			err,
 		)
-		return err
+		return errors.New("Failed add book to database")
 	}
 
 	return nil
@@ -62,7 +63,13 @@ func (r *repo) GetBookByID(id uint64) (models.Book, error) {
 	query = `SELECT * FROM books WHERE id = $1`
 	err = r.db.Get(&book, query, id)
 	if err != nil {
-		return models.Book{}, err
+		logger.LogError(
+			"Get book by ID",
+			"app/repo/postgres/repo",
+			fmt.Sprintf("id: %d", id),
+			err,
+		)
+		return models.Book{}, errors.New("Failed read book from database")
 	}
 
 	return r.toModelsBook(book), nil
@@ -79,7 +86,13 @@ func (r *repo) GetBooks() ([]models.Book, error) {
 	query = `SELECT * FROM books`
 	err = r.db.Select(&dbBooks, query)
 	if err != nil {
-		return nil, err
+		logger.LogError(
+			"Get books",
+			"app/repo/postgres/repo",
+			"",
+			err,
+		)
+		return nil, errors.New("Failed read books list from database")
 	}
 
 	for _, book := range dbBooks {
@@ -106,7 +119,13 @@ func (r *repo) UpdateBook(book models.Book) error {
 
 	_, err = r.db.Exec(query, dbBook.Name, dbBook.Author, dbBook.CreationDate, dbBook.ID)
 	if err != nil {
-		return err
+		logger.LogError(
+			"Update book",
+			"app/repo/postgres/repo",
+			fmt.Sprintf("id: %d, name: %s, author: %s, date: %s", dbBook.ID, dbBook.Name, dbBook.Author, dbBook.CreationDate),
+			err,
+		)
+		return errors.New("Failed update book")
 	}
 
 	return nil
@@ -121,7 +140,13 @@ func (r *repo) DeleteBook(id uint64) error {
 	query = `DELETE FROM books WHERE id = $1`
 	_, err = r.db.Exec(query, id)
 	if err != nil {
-		return err
+		logger.LogError(
+			"Delete book",
+			"app/repo/postgres/repo",
+			fmt.Sprintf("id: %d", id),
+			err,
+		)
+		return errors.New("Failed delete book from database")
 	}
 
 	return nil
