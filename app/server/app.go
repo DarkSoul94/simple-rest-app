@@ -13,7 +13,7 @@ import (
 
 	"github.com/DarkSoul94/simple-rest-app/app"
 	apphttp "github.com/DarkSoul94/simple-rest-app/app/delivery/http"
-	apprepo "github.com/DarkSoul94/simple-rest-app/app/repo/mock"
+	apprepo "github.com/DarkSoul94/simple-rest-app/app/repo/postgres"
 	appusecase "github.com/DarkSoul94/simple-rest-app/app/usecase"
 	micrologger "github.com/alexvelfr/micro-logger"
 	"github.com/gin-gonic/contrib/static"
@@ -34,9 +34,10 @@ type App struct {
 // NewApp ...
 func NewApp() *App {
 	db := initDB()
-	fmt.Println(db)
-	repo := apprepo.NewRepo()
+
+	repo := apprepo.NewRepo(db)
 	uc := appusecase.NewUsecase(repo)
+	
 	return &App{
 		appUC:   uc,
 		appRepo: repo,
